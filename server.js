@@ -4,7 +4,7 @@ const mongoose=require('mongoose');
 
 env.config({path:'./config.env'});
 
-const rawString=process.env.DB_STRING;
+const rawString=process.env.MONGO_URI;
 
 const connectionString=rawString.replace('<Password>',process.env.DB_PASSWORD)
 
