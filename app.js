@@ -41,7 +41,7 @@ app.use(cors({
   exposedHeaders: ['Set-Cookie', 'Authorization', 'Access-Control-Allow-Origin'],
 }));
 // app.options('*', cors());
-app.use(cors({ origin: "https://arc-emp.vercel.app/" }));
+app.use(cors({ origin: "https://arc-emp.vercel.app" }));
 // Add this after cors middleware  // Enable pre-flight for all routes
 
 app.use(express.static('public'));
