@@ -90,7 +90,10 @@ exports.create = async (req, res, next) => {
 exports.Login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email }).select("+password").exec();
+     return res.status(200).json({
+        user
+      });
 
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({
