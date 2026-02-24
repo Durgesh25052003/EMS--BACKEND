@@ -93,7 +93,7 @@ exports.Login = async (req, res, next) => {
     const user = await User.findOne({ email }).select("+password");
 
     if (!user || !(await user.comparePassword(user, password))) {
-      return res.status(404).json({
+      return res.status(401).json({
         status: "Unauthorized User",
       });
     }
