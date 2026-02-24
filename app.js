@@ -34,7 +34,7 @@ app.use(cookieParser());
 app.use(bodyParser.json({ limit: '10kb' }));  // Body size limit
 
 app.use(cors({
-  origin:'https://arc-emp.vercel.app',
+  origin:['https://arc-emp.vercel.app',"https://arc-eqrcs27d0-durgesh25052003s-projects.vercel.app"],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
