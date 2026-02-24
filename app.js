@@ -34,14 +34,14 @@ app.use(cookieParser());
 app.use(bodyParser.json({ limit: '10kb' }));  // Body size limit
 
 app.use(cors({
-  origin:['https://arc-emp.vercel.app',"https://arc-eqrcs27d0-durgesh25052003s-projects.vercel.app"],
+  origin:"https://arc-eqrcs27d0-durgesh25052003s-projects.vercel.app",
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
   exposedHeaders: ['Set-Cookie', 'Authorization', 'Access-Control-Allow-Origin'],
 }));
 // app.options('*', cors());
-app.use(cors({ origin: "https://arc-emp.vercel.app" }));
+app.use(cors({ origin: "https://arc-eqrcs27d0-durgesh25052003s-projects.vercel.app"}));
 // Add this after cors middleware  // Enable pre-flight for all routes
 
 app.use(express.static('public'));
