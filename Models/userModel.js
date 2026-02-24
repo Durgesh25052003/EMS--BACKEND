@@ -153,10 +153,9 @@ userSchema.pre('save', async function(next) {
     next();
 });
 
-userSchema.methods.comparePassword=async function(passwordEnter){
-    const hashedPassword=user.password;
-  return(await bcrypt.compare(passwordEnter,this.hashedPassword));
-}
+userSchema.methods.comparePassword = async function (passwordEnter) {
+  return await bcrypt.compare(passwordEnter, this.password);
+};
 
 userSchema.methods.isPasswordResetTokenValid = function() {
   return this.passwordResetExpires > Date.now();
