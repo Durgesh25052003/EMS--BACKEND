@@ -153,7 +153,7 @@ userSchema.pre('save', async function(next) {
     next();
 });
 
-userSchema.methods.comparePassword=async(user,passwordEnter)=>{
+userSchema.methods.comparePassword=async function(user,passwordEnter){
     const hashedPassword=user.password;
   return(await bcrypt.compare(passwordEnter,hashedPassword));
 }
