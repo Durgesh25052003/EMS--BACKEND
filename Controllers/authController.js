@@ -2,6 +2,14 @@ const User = require("../Models/userModel");
 const jwt = require("jsonwebtoken");
 const Email = require("../utils/Email");
 const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const creatToken = (user) => {
   const secretKey = process.env.SECRET_KEY;
@@ -10,19 +18,7 @@ const creatToken = (user) => {
 };
 
 // image upload
-const multerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    console.log(req.files);
-    cb(null, "public/img/users");
-  },
-  filename: (req, file, cb) => {
-    console.log(file);
-    const ext = file.mimetype.split("/")[1];
-    const fileName = `user-${req.body.firstName}-${Date.now()}.${ext}`;
-    req.body.fileName = fileName;
-    cb(null, fileName);
-  },
-});
+const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
   try {
@@ -42,34 +38,28 @@ const upload = multer({
 });
 
 exports.uploadUserData = upload.fields([
-  { name: "firstName", maxCount: 1 },
-  { name: "lastName", maxCount: 1 },
-  { name: "email", maxCount: 1 },
-  { name: "phone", maxCount: 1 },
-  { name: "position", maxCount: 1 },
-  { name: "department", maxCount: 1 },
-  { name: "employeeId", maxCount: 1 },
-  { name: "joiningDate", maxCount: 1 },
-  { name: "salary", maxCount: 1 },
-  { name: "address", maxCount: 1 },
-  { name: "city", maxCount: 1 },
-  { name: "state", maxCount: 1 },
-  { name: "zipCode", maxCount: 1 },
-  { name: "country", maxCount: 1 },
-  { name: "status", maxCount: 1 },
-  { name: "password", maxCount: 1 },
   { name: "profileImage", maxCount: 1 },
 ]);
 
 exports.create = async (req, res, next) => {
   try {
+    const file = req.files?.profileImage?.[0];
+    if (file) {
+      const b64 = file.buffer.toString("base64");
+      const dataURI = `data:${file.mimetype};base64,${b64}`;
+      const uploadRes = await cloudinary.uploader.upload(dataURI, { folder: "ems/users" });
+      req.body.profileImage = uploadRes.secure_url;
+    }
+    console.log("🤞🤞🤞🏎️",req.body)
+    if (!req.body.password) {
+      return res.status(400).json({
+        status: "error",
+        message: "Password is required"
+      });
+    }
     const user = await User.create({
       ...req.body,
-      profileImage: req.body.fileName,
     });
-    res.json(200).json({
-      user
-    })
     const email = new Email();
     await email.sendMailWelcome(
       user.email,
@@ -77,14 +67,14 @@ exports.create = async (req, res, next) => {
       user.firstName,
       user.email,
       user.confirmPassword,
-      "http://localhost:5173/"
+      "https://ems-ctfv0iui7-durgesh25052003s-projects.vercel.app/"
     );
-    res.status(200).json({
+    return res.status(200).json({
       status: "success",
-      user,
-      message: "Login Successfull",
+      user
     });
   } catch (error) {
+    console.log("✅✅✅");
     console.log(error.message);
   }
 };
@@ -93,10 +83,7 @@ exports.Login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select("+password").exec();
-     return res.status(200).json({
-        user
-      });
-
+    console.log("🙌🙌🙌")
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({
         status: "Unauthorized User",

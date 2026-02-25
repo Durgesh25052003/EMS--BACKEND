@@ -1,21 +1,15 @@
 const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 const User = require("../Models/userModel");
 const { StatusCodes } = require("http-status-codes");
 
 // image upload
-const multerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    console.log(req.files);
-    cb(null, "public/img/users");
-  },
-  filename: (req, file, cb) => {
-    console.log(file);
-    const ext = file.mimetype.split("/")[1];
-    const fileName = `user-${req.body.firstName}-${Date.now()}.${ext}`;
-    req.body.fileName = fileName;
-    cb(null, fileName);
-  },
-});
+const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
   try {
@@ -107,11 +101,17 @@ exports.updateProfile = async (req, res, next) => {
     console.log(req.body)
     const id = req.params.id;
     console.log(id);
+    const file = req.files?.profileImage?.[0];
+    if (file) {
+      const b64 = file.buffer.toString("base64");
+      const dataURI = `data:${file.mimetype};base64,${b64}`;
+      const uploadRes = await cloudinary.uploader.upload(dataURI, { folder: "ems/users" });
+      req.body.profileImage = uploadRes.secure_url;
+    }
     const user = await User.findByIdAndUpdate(
       id,
       {
         ...req.body,
-        profileImage: req.body.fileName,
       },
       { new: true }
     );

@@ -1,8 +1,14 @@
-const app=require('./app')
 const env=require('dotenv');
-const mongoose=require('mongoose');
+const fs=require('fs');
 
-env.config();
+if(process.env.NODE_ENV !== 'production' && fs.existsSync('./config.env')){
+  env.config({ path: './config.env' });
+} else {
+  env.config();
+}
+
+const app=require('./app')
+const mongoose=require('mongoose');
 
 mongoose.connect(process.env.MONGO_URI)
 .then(()=>console.log('Connected to MongoDB')) .catch((err) => {
@@ -13,5 +19,5 @@ mongoose.connect(process.env.MONGO_URI)
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT,()=>{
-    console.log('Server is running on port 3000');
+    console.log(`Server is running on port ${PORT}`);
 })

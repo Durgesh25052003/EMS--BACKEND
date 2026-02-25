@@ -138,9 +138,10 @@ const userSchema = new mongoose.Schema({
 
 
 userSchema.pre('save', async function(next) {
+       console.log("🙌🙌🙌🙌")
+
     // Only run this if password is actually modified
     if (!this.isModified('password')) return next();
-    
     // If password exists, hash it
     if (this.password) {
         const saltRounds = 10;
