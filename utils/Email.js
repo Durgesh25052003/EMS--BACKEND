@@ -1,31 +1,38 @@
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
 
 class Email {
   constructor() {
-    this.resend = new Resend(process.env.RESEND_API_KEY);
-    this.from = process.env.RESEND_FROM;
+    this.transporter = nodemailer.createTransport({
+      service: 'gmail',
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD // App Password, not regular password
+      }
+    });
   }
 
   async sendMailWelcome(toEmail, subject, name, email, password, loginlink) {
     const emailTemplate = fs.readFileSync(path.join(__dirname, '..', 'utils', 'emailTemplate.html'), 'utf-8')
+    console.log(loginlink)
     const content = emailTemplate.replace(/{name}/g, name)
       .replace(/{email}/g, email)
       .replace(/{login_link}/g, `${loginlink}`)
       .replace(/{password}/g, password)
 
     try {
-      const { data, error } = await this.resend.emails.send({
-        from: this.from,
+      const info = await this.transporter.sendMail({
+        from: process.env.GMAIL_USER,
         to: toEmail,
         subject: subject,
         html: content
       });
-      if (error) throw error;
-      console.log('Welcome email sent successfully:', data?.id);
+      console.log('Welcome email sent successfully:', info.messageId);
     } catch (error) {
-      console.error('Email error:', error?.message || error);
+      console.error('Email error:', error);
     }
   }
 
@@ -36,16 +43,15 @@ class Email {
       .replace(/{reset_link}/g, reset_link)
 
     try {
-      const { data, error } = await this.resend.emails.send({
-        from: this.from,
+      const info = await this.transporter.sendMail({
+        from: process.env.GMAIL_USER,
         to: toEmail,
         subject: subject,
         html: content
       });
-      if (error) throw error;
-      console.log('Reset password email sent successfully:', data?.id);
+      console.log('Reset password email sent successfully:', info.messageId);
     } catch (error) {
-      console.error('Email error:', error?.message || error);
+      console.error('Email error:', error);
     }
   }
 }
