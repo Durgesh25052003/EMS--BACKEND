@@ -12,6 +12,17 @@ const xss = require('xss-clean');
 
 const app = express();
 
+app.use(cors({
+  origin:true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  exposedHeaders: ['Set-Cookie', 'Authorization', 'Access-Control-Allow-Origin'],
+}));
+
+app.options('*', cors());
+
+
 // Security middleware
 app.use(helmet());  // Adds various HTTP headers for security
 
@@ -33,13 +44,7 @@ app.use(xss());
 app.use(cookieParser());
 app.use(bodyParser.json({ limit: '10kb' }));  // Body size limit
 
-app.use(cors({
-  origin:true,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
-  exposedHeaders: ['Set-Cookie', 'Authorization', 'Access-Control-Allow-Origin'],
-}));
+
 // Add this after cors middleware  // Enable pre-flight for all routes
 
 app.use(express.static('public'));
