@@ -67,7 +67,9 @@ exports.create = async (req, res, next) => {
       ...req.body,
       profileImage: req.body.fileName,
     });
-    console.log(user);
+    res.json(200).json({
+      user
+    })
     const email = new Email();
     await email.sendMailWelcome(
       user.email,
