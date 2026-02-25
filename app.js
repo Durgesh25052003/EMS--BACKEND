@@ -41,7 +41,6 @@ app.use(mongoSanitize());
 // Regular middleware
 app.use(cookieParser());
 app.use(bodyParser.json({ limit: '10kb' }));  // Body size limit
-S
 app.use(xss());
 
 
