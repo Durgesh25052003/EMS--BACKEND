@@ -69,6 +69,7 @@ exports.create = async (req, res, next) => {
       user.confirmPassword,
       "https://ems-ctfv0iui7-durgesh25052003s-projects.vercel.app/"
     ).catch(err => console.log('Email send failed:', err?.message || err));
+    
     return res.status(200).json({
       status: "success",
       user
