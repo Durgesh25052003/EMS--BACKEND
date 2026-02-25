@@ -37,12 +37,12 @@ app.use('/api', limiter);
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
 
-// Data sanitization against XSS
-app.use(xss());
-
+// Data sanitization against XS
 // Regular middleware
 app.use(cookieParser());
 app.use(bodyParser.json({ limit: '10kb' }));  // Body size limit
+S
+app.use(xss());
 
 
 // Add this after cors middleware  // Enable pre-flight for all routes
